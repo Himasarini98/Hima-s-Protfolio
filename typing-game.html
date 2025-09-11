@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Typing Speed Challenge</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #7F00FF, #E100FF);
+      color: white;
+      text-align: center;
+      padding: 40px;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    #gameContainer {
+      display: none;
+      margin-top: 30px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      font-size: 1em;
+      width: 300px;
+      margin-top: 10px;
+    }
+
+    button {
+      background-color: #00FFC3;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1em;
+      margin-top: 20px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .word-box {
+      font-size: 2em;
+      background: rgba(255, 255, 255, 0.1);
+      display: inline-block;
+      padding: 10px 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    #timer {
+      font-size: 1.5em;
+      margin-top: 10px;
+    }
+
+    #result {
+      font-size: 1.2em;
+      margin-top: 20px;
+    }
+
+    #userInfo {
+      margin-bottom: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🔥 Typing Speed Challenge 🔥</h1>
+
+  <div id="userForm">
+    <div id="userInfo">
+      <input type="text" id="playerName" placeholder="Enter your name" /><br>
+      <input type="text" id="playerSpeed" placeholder="Your typing speed (WPM)" />
+    </div>
+    <button onclick="startGame()">Start Game</button>
+  </div>
+
+  <div id="gameContainer">
+    <p id="welcomeText"></p>
+    <div class="word-box" id="wordDisplay">word</div><br>
+    <input type="text" id="wordInput" placeholder="Type the word here..." oninput="checkInput()" /><br>
+    <div id="timer">Time left: <span id="timeLeft">5</span> sec</div>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const words = ["python", "keyboard", "challenge", "speed", "function", "javascript", "interface", "practice", "developer", "typing"];
+    let currentWord = "";
+    let timeLimit = 5;
+    let timer;
+    let score = 0;
+    let round = 0;
+
+    function startGame() {
+      const name = document.getElementById("playerName").value;
+      const speed = document.getElementById("playerSpeed").value;
+
+      if (!name || !speed) {
+        alert("Please enter your name and typing speed!");
+        return;
+      }
+
+      document.getElementById("userForm").style.display = "none";
+      document.getElementById("gameContainer").style.display = "block";
+      document.getElementById("welcomeText").innerText = `Welcome, ${name}! Let's test your typing speed!`;
+
+      nextWord();
+    }
+
+    function nextWord() {
+      if (round >= 5) {
+        document.getElementById("result").innerHTML = `<strong>🏁 Game Over!</strong> You scored ${score}/5`;
+        document.getElementById("wordDisplay").style.display = "none";
+        document.getElementById("wordInput").style.display = "none";
+        document.getElementById("timer").style.display = "none";
+        return;
+      }
+
+      round++;
+      currentWord = words[Math.floor(Math.random() * words.length)];
+      document.getElementById("wordDisplay").innerText = currentWord;
+      document.getElementById("wordInput").value = "";
+      document.getElementById("result").innerText = "";
+      document.getElementById("timeLeft").innerText = timeLimit;
+
+      clearInterval(timer);
+      let time = timeLimit;
+      timer = setInterval(() => {
+        time--;
+        document.getElementById("timeLeft").innerText = time;
+        if (time === 0) {
+          clearInterval(timer);
+          document.getElementById("result").innerText = "⏱️ Time's up!";
+          setTimeout(nextWord, 1500);
+        }
+      }, 1000);
+    }
+
+    function checkInput() {
+      const input = document.getElementById("wordInput").value.trim();
+      if (input === currentWord) {
+        clearInterval(timer);
+        score++;
+        document.getElementById("result").innerText = "✅ Correct!";
+        setTimeout(nextWord, 1000);
+      }
+    }
+  </script>
+
+</body>
+</html>
