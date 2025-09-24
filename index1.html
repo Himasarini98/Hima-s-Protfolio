@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bogodage Himasarini Chamodya — Portfolio</title>
+  <meta name="description" content="Portfolio of Bogodage Himasarini Chamodya, Data Analysis & Programming student." />
+  <style>
+    :root {
+      --primary:#1d4ed8;   /* Blue */
+      --accent:#facc15;    /* Yellow */
+      --bg:#e0f2fe;        /* Light blue background */
+      --card:#ffffff;
+      --text:#1e293b;
+    }
+    * {box-sizing:border-box;}
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+    }
+    .container {max-width:1100px;margin:32px auto;padding:24px}
+    header {
+      display:flex;gap:16px;align-items:center;
+      background: linear-gradient(90deg,var(--primary),var(--accent));
+      color:white;
+      padding:20px;
+      border-radius:16px;
+      box-shadow:0 8px 24px rgba(0,0,0,0.2);
+    }
+    .avatar {
+      width:110px;height:110px;border-radius:50%;
+      object-fit:cover;
+      border:4px solid white;
+      box-shadow:0 4px 18px rgba(0,0,0,0.3)
+    }
+    h1 {margin:0;font-size:2rem}
+    p.lead {margin:6px 0 0;color:#f0f9ff;font-weight:500}
+    .top-actions {margin-left:auto;display:flex;gap:10px}
+    .btn {
+      background:white;
+      color:var(--primary);
+      padding:8px 14px;
+      border-radius:8px;
+      text-decoration:none;
+      font-weight:600;
+      transition:all 0.3s ease;
+    }
+    .btn:hover {background:var(--accent);color:#111827;}
+    main {margin-top:22px}
+    .grid {display:grid;grid-template-columns:1fr 320px;gap:20px}
+    .card {
+      background:var(--card);
+      padding:18px;
+      border-radius:16px;
+      box-shadow:0 8px 24px rgba(0,0,0,0.1);
+      transition:transform 0.2s ease;
+    }
+    .card:hover {transform:translateY(-5px);}
+    .section-title {
+      display:flex;align-items:center;gap:8px;
+      margin-bottom:12px;font-weight:700;color:var(--primary)
+    }
+    .skills {display:flex;flex-wrap:wrap;gap:8px}
+    .skill {
+      background:linear-gradient(90deg,var(--primary),var(--accent));
+      color:#111827;
+      padding:6px 12px;
+      border-radius:999px;
+      font-size:0.9rem;
+      font-weight:600
+    }
+    footer {
+      margin-top:26px;
+      color:#475569;
+      font-size:0.9rem;
+      text-align:center
+    }
+    .contact-list {display:flex;flex-direction:column;gap:8px}
+    .badge {
+      display:inline-block;
+      background:linear-gradient(90deg,var(--primary),var(--accent));
+      color:#111827;
+      padding:6px 10px;
+      border-radius:8px;
+      font-weight:600
+    }
+    .small {font-size:0.9rem;color:#475569}
+    a.link {color:var(--primary);text-decoration:none;font-weight:600}
+    a.link:hover {color:var(--accent)}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img class="avatar" src="https://via.placeholder.com/300x300.png?text=Photo" alt="Profile photo placeholder" />
+      <div>
+        <h1>Bogodage Himasarini Chamodya</h1>
+        <p class="lead">A curious technophile who loves music, bingeing K-dramas, and discovering new cuisines from around the world. I’m passionate about learning new technologies and dreaming of one day building a business empire in Sri Lanka that blends innovation with local culture.</p>
+        <div class="small">DongA University • Integrated Business Management Department • Graduation: 2028</div>
+      </div>
+      <div class="top-actions">
+        <a class="btn" href="#skills">Skills</a>
+        <a class="btn" href="#contact">Contact</a>
+      </div>
+    </header>
+
+    <main>
+      <div class="grid">
+        <!-- LEFT COLUMN -->
+        <div>
+          <section class="card" id="about">
+            <div class="section-title"><h2>About</h2></div>
+            <p class="small">I am a student with interests in technology, data analysis, and programming. I also have 5 years of professional experience as a Senior Medical Documentation Specialist at Augmedix. My goal is to combine my background in documentation and management with data analysis to create meaningful insights and solutions.</p>
+          </section>
+
+          <section class="card" id="skills" style="margin-top:16px">
+            <div class="section-title"><h2>Skills</h2></div>
+            <div class="skills">
+              <span class="skill">Python</span>
+              <span class="skill">MS Word</span>
+              <span class="skill">MS PowerPoint</span>
+              <span class="skill">MS Excel</span>
+              <span class="skill">Medical Coding</span>
+              <span class="skill">Documentation Management</span>
+            </div>
+          </section>
+
+          <section class="card" id="experience" style="margin-top:16px">
+            <div class="section-title"><h2>Work Experience</h2></div>
+            <ul class="small" style="margin:8px 0 0;padding-left:18px">
+              <li><strong>Senior Medical Documentation Specialist</strong> at Augmedix — 5 years</li>
+            </ul>
+          </section>
+
+          <section class="card" id="coursework" style="margin-top:16px">
+            <div class="section-title"><h2>Relevant Coursework</h2></div>
+            <ul class="small" style="margin:8px 0 0;padding-left:18px">
+              <li>Data Analysis & Visualization</li>
+              <li>Introduction to Databases / SQL</li>
+              <li>Programming for Data Science (Python)</li>
+              <li>Probability & Statistics</li>
+            </ul>
+          </section>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <aside>
+          <div class="card" id="contact">
+            <div class="section-title"><h2>Contact</h2></div>
+            <div class="contact-list">
+              <div><strong>Email:</strong> <a class="link" href="mailto:himabogoda98@gmail.com">himabogoda98@gmail.com</a></div>
+              <div><strong>GitHub:</strong> <a class="link" href="https://github.com/Himasarini98" target="_blank">github.com/Himasarini98</a></div>
+              <div><strong>Location:</strong> Busan, South Korea (DongA University)</div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:16px">
+            <div class="section-title"><h2>Quick Stats</h2></div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <div class="badge">Experience: 5 years</div>
+              <div class="badge">Skills: 6+</div>
+              <div class="badge">Student</div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <footer>
+        <div class="small">✨ Built with love and curiosity — You can host this on GitHub Pages easily!</div>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>
