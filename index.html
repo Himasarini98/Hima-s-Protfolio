@@ -7,9 +7,9 @@
   <meta name="description" content="Portfolio of Bogodage Himasarini Chamodya, Data Analysis & Programming student." />
   <style>
     :root {
-      --primary:#1d4ed8;   /* Blue */
-      --accent:#facc15;    /* Yellow */
-      --bg:#e0f2fe;        /* Light blue background */
+      --primary:#1d4ed8;
+      --accent:#facc15;
+      --bg:#e0f2fe;
       --card:#ffffff;
       --text:#1e293b;
     }
@@ -89,6 +89,17 @@
     .small {font-size:0.9rem;color:#475569}
     a.link {color:var(--primary);text-decoration:none;font-weight:600}
     a.link:hover {color:var(--accent)}
+    .projects {display:flex;flex-direction:column;gap:12px}
+    .project-card {
+      background:linear-gradient(90deg,var(--primary),var(--accent));
+      color:#111827;
+      padding:14px;
+      border-radius:12px;
+      text-decoration:none;
+      font-weight:600;
+      transition:all 0.3s ease;
+    }
+    .project-card:hover {background:var(--primary);color:white;transform:translateY(-3px);}
   </style>
 </head>
 <body>
@@ -142,6 +153,16 @@
               <li>Programming for Data Science (Python)</li>
               <li>Probability & Statistics</li>
             </ul>
+          </section>
+
+          <!-- NEW Projects Section -->
+          <section class="card" id="projects" style="margin-top:16px">
+            <div class="section-title"><h2>Projects & Games</h2></div>
+            <div class="projects">
+              <a class="project-card" href="https://himasarini98.github.io/Hima-s-Protfolio/newgame.html" target="_blank">🎮 New Game</a>
+              <a class="project-card" href="https://himasarini98.github.io/Hima-s-Protfolio/index.html" target="_blank">🕹️ Old Game</a>
+              <a class="project-card" href="https://docs.google.com/document/d/1RykyXJyEoXNrNHO0JfxYt9ug3_NzHpSVQcbFenzK4mk/edit?tab=t.0" target="_blank">📄 Google Doc</a>
+            </div>
           </section>
         </div>
 
