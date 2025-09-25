@@ -1,737 +1,677 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Pro-Type: The Typing Challenge</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <style id="theme-style">
-        /* --- Base Styling --- */
-        :root {
-            --color-bg-dark: #0f172a;
-            --color-bg-card: #1e293b;
-            --color-text-light: #f1f5f9;
-            --color-primary: #38bdf8;
-            --color-success: #22c55e;
-            --color-danger: #ef4444;
-            --color-current-word-bg: #475569;
-            --font-mono: 'Roboto Mono', monospace;
-            --transition-speed: 0.3s;
-        }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Pro Typing Challenge</title>
+<style>
+    /* ------------------------------------- */
+    /* 1. Core Styles & Responsiveness */
+    /* ------------------------------------- */
+    :root {
+        --color-bg: #0f172a;
+        --color-card: #1e293b;
+        --color-text: #f1f5f9;
+        --color-accent: #38bdf8;
+        --color-correct: #22c55e;
+        --color-wrong: #ef4444;
+        --color-word-bg: #334155;
+    }
 
-        body {
-            font-family: var(--font-mono);
-            background: var(--color-bg-dark);
-            color: var(--color-text-light);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            transition: background 0.5s ease;
-        }
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--color-bg);
+        color: var(--color-text);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        transition: background-color 0.5s;
+        /* Default Theme: Air Space (Subtle Stars/Nebula) */
+        background-image: radial-gradient(circle at 10% 20%, #0c1a3b 0%, #000c24 100%);
+        animation: subtle-pulse 10s infinite alternate;
+    }
 
-        /* --- Theme-specific Overrides (Air Space is default) --- */
-        body.theme-air-space {
-            background-color: #0d1a29;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 100"><circle cx="10" cy="10" r="1" fill="%231a3450" /><circle cx="50" cy="50" r="1" fill="%231a3450" /><circle cx="90" cy="90" r="1" fill="%231a3450" /></svg>');
-            animation: stars-twinkle 15s infinite alternate;
-        }
+    @keyframes subtle-pulse {
+        from { transform: scale(1); }
+        to { transform: scale(1.02); }
+    }
 
-        @keyframes stars-twinkle {
-            from { background-position: 0 0; }
-            to { background-position: 100px 100px; }
-        }
+    .card {
+        background: var(--color-card);
+        padding: 30px;
+        border-radius: 16px;
+        width: 900px;
+        max-width: 95%;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        transition: transform 0.3s ease-out;
+    }
 
-        /* Placeholders for other themes */
-        .theme-pink-panther { background: linear-gradient(135deg, #f97316, #ec4899); }
-        .theme-sea { background: linear-gradient(135deg, #0f766e, #0369a1); }
-        .theme-sky { background: linear-gradient(135deg, #3b82f6, #93c5fd); }
-        .theme-robots { background: linear-gradient(135deg, #7c3aed, #4f46e5); }
+    /* ------------------------------------- */
+    /* 2. Typography & Layout */
+    /* ------------------------------------- */
+    h1 {
+        text-align: center;
+        margin-top: 0;
+        color: var(--color-accent);
+    }
 
+    .words-container {
+        background: var(--color-word-bg);
+        padding: 20px;
+        border-radius: 10px;
+        min-height: 150px;
+        margin-bottom: 15px;
+        line-height: 1.8;
+        font-size: 20px;
+        user-select: none;
+        overflow: hidden; /* Important for word rendering */
+        position: relative;
+    }
 
-        /* --- Component Styling --- */
-        .card {
-            background: var(--color-bg-card);
-            padding: 30px;
-            border-radius: 16px;
-            width: 900px;
-            max-width: 95%;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-            animation: card-entry 0.8s ease-out;
-        }
+    .word { margin-right: 10px; display: inline-block; white-space: nowrap; }
+    .word.current { background: #475569; border-radius: 4px; padding: 0 4px; }
+    
+    .char.correct { color: var(--color-correct); }
+    .char.wrong { color: var(--color-wrong); background-color: rgba(239, 68, 68, 0.2); border-radius: 2px; }
+    
+    #input {
+        width: 100%;
+        padding: 15px;
+        border-radius: 8px;
+        border: 2px solid var(--color-word-bg);
+        font-size: 18px;
+        outline: none;
+        background: #1e293b;
+        color: var(--color-text);
+        transition: border-color 0.3s;
+    }
+    #input:focus { border-color: var(--color-accent); }
 
-        @keyframes card-entry {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    /* ------------------------------------- */
+    /* 3. Stats & Buttons */
+    /* ------------------------------------- */
+    .stats {
+        margin-top: 15px;
+        display: flex;
+        justify-content: space-between;
+        font-size: 18px;
+        padding: 10px 0;
+    }
+    .stat-item span { font-weight: bold; color: var(--color-accent); }
+    
+    button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        background: var(--color-accent);
+        color: var(--color-bg);
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.1s;
+    }
+    button:hover { background: #0ea5e9; transform: translateY(-1px); }
 
-        h1 { margin-top: 0; color: var(--color-primary); }
+    /* ------------------------------------- */
+    /* 4. Setup & Theming */
+    /* ------------------------------------- */
+    #setup, #theme-selector, #game-controls {
+        padding: 10px 0;
+        border-top: 1px solid #334155;
+        margin-top: 15px;
+    }
 
-        /* Words Display Area */
-        .words-container {
-            background: #334155;
-            padding: 20px;
-            border-radius: 10px;
-            min-height: 140px;
-            margin-bottom: 15px;
-            line-height: 1.8;
-            font-size: 20px;
-            user-select: none;
-            overflow: hidden;
-            border: 2px solid transparent;
-            transition: border-color var(--transition-speed);
-        }
+    label { display: block; margin-bottom: 8px; font-size: 16px; }
+    input[type="text"], input[type="number"], select {
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #475569;
+        background: #334155;
+        color: var(--color-text);
+        width: 100%;
+        box-sizing: border-box;
+        margin-top: 4px;
+    }
+    
+    .theme-option {
+        display: inline-block;
+        margin-right: 10px;
+        cursor: pointer;
+        padding: 8px 12px;
+        border-radius: 6px;
+        border: 2px solid transparent;
+        transition: all 0.2s;
+        font-size: 14px;
+    }
+    .theme-option.selected {
+        border-color: var(--color-accent);
+        background: rgba(56, 189, 248, 0.2);
+    }
+    
+    /* ------------------------------------- */
+    /* 5. Pop-up & Modal (for level transition) */
+    /* ------------------------------------- */
+    .modal {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+    }
+    .modal.active { opacity: 1; pointer-events: auto; }
 
-        /* Focus state for words container */
-        .words-container:focus-within {
-            border-color: var(--color-primary);
-        }
+    .modal-content {
+        background: var(--color-card);
+        padding: 30px;
+        border-radius: 10px;
+        text-align: center;
+        animation: scale-up 0.3s ease-out;
+    }
+    @keyframes scale-up { from { transform: scale(0.8); } to { transform: scale(1); } }
+    .modal-content h2 { color: var(--color-correct); }
 
-        .word {
-            margin-right: 10px;
-            padding: 2px 0;
-            display: inline-block;
-        }
-
-        /* Highlight the Current Word */
-        .word.current {
-            background: var(--color-current-word-bg);
-            border-radius: 4px;
-            padding: 2px 5px;
-            box-shadow: 0 0 5px rgba(56, 189, 248, 0.5);
-            animation: pulse 1s infinite alternate;
-        }
-
-        @keyframes pulse {
-            from { transform: scale(1); }
-            to { transform: scale(1.02); }
-        }
-
-        /* Character Feedback */
-        .char { transition: color 0.1s; }
-        .char.correct { color: var(--color-success); }
-        .char.wrong { color: var(--color-danger); text-decoration: line-through; }
-        .char.pending { opacity: 0.6; }
-
-        /* Input Field */
-        #input {
-            width: 100%;
-            padding: 15px;
-            border-radius: 8px;
-            border: 2px solid transparent;
-            font-size: 18px;
-            background: #0f172a;
-            color: var(--color-text-light);
-            box-sizing: border-box;
-            outline: none;
-            transition: border-color var(--transition-speed);
-        }
-        #input:focus { border-color: var(--color-primary); }
-        #input:disabled { background: #334155; cursor: not-allowed; }
-
-        /* Buttons */
-        button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            background: var(--color-primary);
-            color: var(--color-bg-dark);
-            font-weight: bold;
-            cursor: pointer;
-            transition: background var(--transition-speed), transform 0.1s;
-        }
-        button:hover { background: #0ea5e9; }
-        button:active { transform: scale(0.98); }
-
-        /* Stats & Results */
-        .stats-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-            padding: 10px 0;
-            border-top: 1px solid #334155;
-        }
-        .stat-item {
-            font-size: 18px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .stat-value {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--color-primary);
-        }
-        .win { color: var(--color-success); font-weight: bold; animation: success-glow 1s infinite alternate; }
-        .lose { color: var(--color-danger); font-weight: bold; }
-
-        @keyframes success-glow {
-            from { text-shadow: 0 0 5px var(--color-success); }
-            to { text-shadow: 0 0 10px var(--color-success); }
-        }
-
-        /* --- Setup & Controls --- */
-        #setup, #game-controls {
-            display: grid;
-            gap: 15px;
-        }
-        #setup {
-            grid-template-columns: 1fr 1fr;
-        }
-        .level-selection {
-            display: flex;
-            gap: 10px;
-            grid-column: span 2;
-        }
-        .level-selection button {
-            flex-grow: 1;
-            background: #475569;
-            color: var(--color-text-light);
-        }
-        .level-selection button.selected {
-            background: var(--color-primary);
-            color: var(--color-bg-dark);
-        }
-        .theme-selection {
-            grid-column: span 2;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .theme-selection button {
-            background: #475569;
-            flex-basis: calc(20% - 8px); /* 5 themes, adjust for gap */
-        }
-        .theme-selection button.selected {
-            border: 3px solid var(--color-primary);
-            background: #334155;
-            color: var(--color-primary);
-        }
-        label { display: block; margin-bottom: 5px; }
-
-        /* --- Pop-up Modal --- */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-        }
-        .modal-content {
-            background: var(--color-bg-card);
-            padding: 40px;
-            border-radius: 15px;
-            text-align: center;
-            animation: modal-zoom 0.3s ease-out;
-            max-width: 90%;
-        }
-        @keyframes modal-zoom {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-        .modal-buttons button { margin: 0 10px; }
-
-        /* --- Leaderboard & Progress --- */
-        #leaderboard, #progress-chart {
-            margin-top: 20px;
-            background: #334155;
-            padding: 15px;
-            border-radius: 10px;
-        }
-        #leaderboard h2, #progress-chart h2 { margin: 0 0 10px 0; color: var(--color-primary); }
-        #leaderboard ol, #progress-chart ul { padding-left: 20px; list-style-type: none; }
-        #leaderboard li { margin-bottom: 5px; border-bottom: 1px dashed #475569; padding-bottom: 5px; }
-        #progress-chart li { margin-bottom: 10px; }
-
-
-    </style>
+    /* ------------------------------------- */
+    /* 6. Leaderboard (Styling kept simple) */
+    /* ------------------------------------- */
+    #leaderboard {
+        margin-top: 20px;
+        background: var(--color-word-bg);
+        padding: 15px;
+        border-radius: 10px;
+    }
+    #leaderboard h2 { margin: 0 0 10px 0; color: var(--color-accent); }
+    #leaderboard ol { padding-left: 20px; }
+    
+</style>
 </head>
 <body>
 <div class="card">
-    <h1>Pro-Type Challenge</h1>
+    <h1><span id="game-title">Pro Typing Challenge</span></h1>
+    
+    <div id="level-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-title">Level Complete!</h2>
+            <p id="modal-message"></p>
+            <button id="continue-btn" class="modal-btn">Continue to Next Level</button>
+            <button id="stop-btn" class="modal-btn" style="background: var(--color-wrong); margin-left: 10px;">Stop Game</button>
+        </div>
+    </div>
 
     <div id="setup">
-        <label>Player Name: <input type="text" id="playerName" placeholder="Enter your name"></label>
-        <div class="theme-selection">
-            <label>Select Theme:</label>
-            <button data-theme="air-space" class="selected">Air Space</button>
-            <button data-theme="sea">Sea</button>
-            <button data-theme="pink-panther">Pink Panther</button>
-            <button data-theme="sky">Sky</button>
-            <button data-theme="robots">Robots</button>
+        <label>Player Name: <input type="text" id="playerName" value="Guest"></label>
+        <label>Select Level: 
+            <select id="difficulty">
+                <option value="easy">Easy (Time/Word: 4s)</option>
+                <option value="medium">Medium (Time/Word: 3s)</option>
+                <option value="hard">Hard (Time/Word: 2s)</option>
+                <option value="expert">Expert (Time/Word: 1s)</option>
+            </select>
+        </label>
+        
+        <div id="theme-selector">
+            <strong>Select Theme:</strong>
+            <span class="theme-option selected" data-theme="air-space">Air Space</span>
+            <span class="theme-option" data-theme="sea">Sea</span>
+            <span class="theme-option" data-theme="pink-panther">Pink Panther</span>
+            <span class="theme-option" data-theme="sky">Sky</span>
+            <span class="theme-option" data-theme="robots">Robots</span>
         </div>
-        <div class="level-selection">
-            <label>Select Level:</label>
-            <button data-level="easy" class="selected">Easy</button>
-            <button data-level="medium">Medium</button>
-            <button data-level="hard">Hard</button>
-            <button data-level="expert">Expert</button>
-        </div>
-        <button id="startBtn" style="grid-column: span 2;">Start Game</button>
+
+        <button id="startBtn" style="width: 100%; margin-top: 15px;">Start Challenge</button>
     </div>
 
     <div id="game" style="display:none;">
-        <div class="words-container" id="words"></div>
-        <input id="input" type="text" placeholder="Type here..." disabled>
-
-        <div class="stats-container">
+        <div class="stats">
             <div class="stat-item">Level: <span id="current-level">Easy</span></div>
-            <div class="stat-item">Time Left: <span id="timer" class="stat-value">0</span>s</div>
-            <div class="stat-item">WPM: <span id="wpm" class="stat-value">0</span></div>
-            <div class="stat-item">Accuracy: <span id="accuracy" class="stat-value">100%</span></div>
-            <div class="stat-item">Score: <span id="score" class="stat-value">0</span></div>
+            <div class="stat-item">Time Left: <span id="timer">0</span>s</div>
+            <div class="stat-item">WPM: <span id="wpm">0</span></div>
+            <div class="stat-item">Accuracy: <span id="accuracy">100%</span></div>
         </div>
 
-        <div id="result"></div>
-    </div>
-
-    <div style="display: flex; gap: 20px; margin-top: 20px;">
-        <div id="progress-chart" style="flex: 1;">
-            <h2>📈 Performance History</h2>
-            <ul id="historyList">
-                <li>Start a game to see your progress!</li>
-            </ul>
-        </div>
-        <div id="leaderboard" style="flex: 1;">
-            <h2>🏆 High Scores</h2>
-            <ol id="leaderboardList"></ol>
+        <div class="words-container" id="words"></div>
+        <input id="input" type="text" placeholder="Type here..." disabled autocomplete="off">
+        
+        <div id="result" style="margin-top: 15px;"></div>
+        <div id="game-controls" style="text-align: center;">
+            <button id="restartBtn" style="display:none;">Restart Game</button>
         </div>
     </div>
 
-</div>
-
-<div id="levelModal" class="modal">
-    <div class="modal-content">
-        <h2 id="modal-title">Level Complete!</h2>
-        <p>Congratulations, you completed <span id="completed-level"></span> with a score of <span id="modal-score"></span>!</p>
-        <p id="modal-message">Ready for the next level: <span id="next-level-name"></span>?</p>
-        <div class="modal-buttons">
-            <button id="modal-continue">Continue</button>
-            <button id="modal-stop">Stop Game</button>
-        </div>
+    <div id="leaderboard">
+        <h2>🏆 Top WPM Scores</h2>
+        <ol id="leaderboardList"></ol>
     </div>
 </div>
 
 <script>
-    // --- MODULE 1: Data and Configuration ---
-    const GAME_CONFIG = {
-        // Words are sorted by approximate difficulty (length, commonality)
-        WORDS: {
-            easy: ["the", "quick", "brown", "fox", "jumps", "over", "lazy", "dog", "is", "a", "good", "cat", "run", "make", "test", "game", "challenge", "improve", "coding", "html", "css", "javascript", "code", "best", "simple", "time", "speed", "test", "word", "play"],
-            medium: ["practice", "perfect", "victory", "beginner", "keyboard", "monitor", "program", "window", "display", "function", "variable", "string", "array", "object", "console", "element", "button", "server", "client", "network", "webpage", "developer", "expert", "quality", "feature", "system", "enhance", "modular", "design", "utility"],
-            hard: ["refactor", "algorithm", "concurrent", "asynchronous", "architecture", "dependency", "abstraction", "polymorphism", "inheritance", "encapsulation", "framework", "bootstrap", "typescript", "debugging", "repository", "integration", "component", "interface", "protocol", "validation", "iteration", "performance", "efficiency", "structure", "optimization", "responsive", "visualize", "telemetry", "websocket", "database"],
-            expert: ["superfluous", "sesquipedalian", "juxtaposition", "ubiquitous", "onomatopoeia", "discombobulate", "metamorphosis", "epistemology", "phlegmatic", "vicissitude", "paradigm", "verisimilitude", "perspicacious", "unconscionable", "idiosyncrasy", "schadenfreude", "transmogrify", "recalcitrant", "conundrum", "surreptitious", "quintessential", "nonchalant", "cacophony", "eudaemonia", "pulchritudinous", "antidisestablishmentarianism", "pneumonoultramicroscopicsilicovolcanoconiosis", "floccinaucinihilipilification", "interdigitation", "hippopotomonstrosesquippedaliophobia"]
-        },
+(() => {
+    // -------------------------------------
+    // MODULE 1: CONFIGURATION & DATA
+    // -------------------------------------
+    const CONFIG = {
         LEVELS: {
-            easy: { timePerWord: 4, next: 'medium', name: 'Easy' },
-            medium: { timePerWord: 3, next: 'hard', name: 'Medium' },
-            hard: { timePerWord: 2.5, next: 'expert', name: 'Hard' },
-            expert: { timePerWord: 2, next: null, name: 'Expert' }
+            easy: { words: "the quick brown fox jumps over lazy dog practice perfect typing speed game improve coding javascript html css challenge victory".split(" ").sort(() => Math.random() - 0.5), timePerWord: 4 }, // 25 words
+            medium: { words: "algorithm framework application asynchronous modular developer backend frontend database repository component variable function scope promise async await closure object array class inherit method polymorphism abstraction".split(" ").sort(() => Math.random() - 0.5), timePerWord: 3 }, // 30 words
+            hard: { words: "unpredictable bureaucracy conscientious discombobulate entrepreneurship exhilaration idiosyncrasy mischievous paraphernalia picturesque reconnaissance silhouette susceptibility ubiquitous vernacular willingness yacht zephyr zenith".split(" ").sort(() => Math.random() - 0.5), timePerWord: 2 }, // 26 words
+            expert: { words: "juxtaposition onomatopoeia acquiesce paradigm clandestine dichotomy ephemeral harbinger intrepid mellifluous paucity rhetoric serendipity taciturn vivacious wisp xylophone yolk zeitgeist zizz zany zaftig zillion zither zygote".split(" ").sort(() => Math.random() - 0.5), timePerWord: 1 }, // 26 words
         },
-        MAX_WORDS_PER_LEVEL: 30,
-        THEMES: ['air-space', 'sea', 'pink-panther', 'sky', 'robots'],
+        WORD_COUNT: 30, // Minimum words per level
+        THEMES: {
+            'air-space': { bg: 'radial-gradient(circle at 10% 20%, #0c1a3b 0%, #000c24 100%)', text: '#f1f5f9', accent: '#38bdf8' },
+            'sea': { bg: 'linear-gradient(to right, #00c6ff, #0072ff)', text: '#ffffff', accent: '#ffea00' },
+            // Add other themes here (Pink Panther, Sky, Robots)
+        },
         SOUNDS: {
-            correct: 'assets/correct.mp3', // Placeholder
-            miss: 'assets/miss.mp3', // Placeholder
-            levelUp: 'assets/levelup.mp3' // Placeholder
+            PASS_LEVEL: 'https://cdn.jsdelivr.net/gh/Tonejs/Tone.js@master/examples/audio/pascal.mp3', // Placeholder
+            FAIL_WORD: 'https://cdn.jsdelivr.net/gh/Tonejs/Tone.js@master/examples/audio/chord.mp3'   // Placeholder
         }
     };
-
-    // --- MODULE 2: Game State Variables ---
-    let state = {
-        playerName: "",
-        currentLevelKey: 'easy',
-        currentWords: [],
+    
+    // -------------------------------------
+    // MODULE 2: STATE MANAGEMENT
+    // -------------------------------------
+    let gameState = {
+        playerName: "Guest",
+        currentLevel: 'easy',
+        wordsArray: [],
         currentIndex: 0,
         correctChars: 0,
-        totalTypedChars: 0,
-        score: 0,
-        wordsTyped: 0,
-        wordsMissed: 0,
+        totalTyped: 0,
         startTime: null,
         timerId: null,
         wordTimerId: null,
         timeLeft: 0,
-        theme: 'air-space'
+        levelTimeLimit: 0,
+        isGameOver: true,
     };
 
-    // --- MODULE 3: DOM Element Access ---
+    // -------------------------------------
+    // MODULE 3: DOM ELEMENTS & UTILITIES
+    // -------------------------------------
     const DOM = {
-        setup: document.getElementById('setup'),
-        game: document.getElementById('game'),
         wordsEl: document.getElementById('words'),
         inputEl: document.getElementById('input'),
         timerEl: document.getElementById('timer'),
         wpmEl: document.getElementById('wpm'),
         accuracyEl: document.getElementById('accuracy'),
         resultEl: document.getElementById('result'),
-        scoreEl: document.getElementById('score'),
-        currentLevelEl: document.getElementById('current-level'),
         startBtn: document.getElementById('startBtn'),
-        levelButtons: document.querySelectorAll('.level-selection button'),
-        themeButtons: document.querySelectorAll('.theme-selection button'),
+        restartBtn: document.getElementById('restartBtn'),
         leaderboardList: document.getElementById('leaderboardList'),
-        historyList: document.getElementById('historyList'),
-        levelModal: document.getElementById('levelModal'),
+        setupScreen: document.getElementById('setup'),
+        gameScreen: document.getElementById('game'),
+        playerInput: document.getElementById('playerName'),
+        levelSelect: document.getElementById('difficulty'),
+        currentLevelEl: document.getElementById('current-level'),
+        levelModal: document.getElementById('level-modal'),
         modalTitle: document.getElementById('modal-title'),
-        completedLevel: document.getElementById('completed-level'),
-        modalScore: document.getElementById('modal-score'),
         modalMessage: document.getElementById('modal-message'),
-        nextLevelName: document.getElementById('next-level-name'),
-        modalContinue: document.getElementById('modal-continue'),
-        modalStop: document.getElementById('modal-stop')
+        continueBtn: document.getElementById('continue-btn'),
+        stopBtn: document.getElementById('stop-btn'),
+        themeOptions: document.querySelectorAll('.theme-option'),
+    };
+    
+    const util = {
+        playSound: (type) => {
+            if (CONFIG.SOUNDS[type]) {
+                new Audio(CONFIG.SOUNDS[type]).play().catch(() => {}); // Prevent console errors
+            }
+        },
+        // Retrieves the next level key based on the current one
+        getNextLevel: (currentKey) => {
+            const keys = Object.keys(CONFIG.LEVELS);
+            const currentIndex = keys.indexOf(currentKey);
+            return currentIndex < keys.length - 1 ? keys[currentIndex + 1] : null;
+        },
     };
 
-    // --- MODULE 4: Utility Functions (Leaderboard, Sound, Theme) ---
-
-    // Plays a sound (requires actual audio files)
-    function playSound(type) {
-        // if (GAME_CONFIG.SOUNDS[type]) {
-        //     const audio = new Audio(GAME_CONFIG.SOUNDS[type]);
-        //     audio.play().catch(e => console.error("Sound play failed:", e));
-        // }
-    }
-
-    // Loads and Renders Leaderboard from localStorage
-    function renderLeaderboard() {
-        let leaderboard = JSON.parse(localStorage.getItem("protypeLeaderboard") || "[]");
-        leaderboard.sort((a, b) => b.score - a.score);
-        leaderboard = leaderboard.slice(0, 5); // Keep top 5
-
-        DOM.leaderboardList.innerHTML = '';
-        leaderboard.forEach((p, index) => {
-            const li = document.createElement('li');
-            li.textContent = `${index + 1}. ${p.name} (${p.level}) - ${p.score} points`;
-            DOM.leaderboardList.appendChild(li);
-        });
-    }
-
-    // Updates Leaderboard on game finish
-    function updateLeaderboard() {
-        let leaderboard = JSON.parse(localStorage.getItem("protypeLeaderboard") || "[]");
-        const newEntry = {
-            name: state.playerName,
-            score: state.score,
-            wpm: calculateWPM(),
-            level: GAME_CONFIG.LEVELS[state.currentLevelKey].name
-        };
-        leaderboard.push(newEntry);
-        localStorage.setItem("protypeLeaderboard", JSON.stringify(leaderboard));
-        renderLeaderboard();
-    }
-
-    // Updates Performance History
-    function updateHistory(result) {
-        let history = JSON.parse(sessionStorage.getItem("protypeHistory") || "[]");
-        history.push(result);
-        sessionStorage.setItem("protypeHistory", JSON.stringify(history));
-
-        DOM.historyList.innerHTML = '';
-        history.slice(-5).reverse().forEach(h => { // Show last 5 results
-            const li = document.createElement('li');
-            li.textContent = `${h.level} - WPM: ${h.wpm}, Acc: ${h.accuracy}% (Score: ${h.score})`;
-            DOM.historyList.appendChild(li);
-        });
-    }
-
-    // Sets the selected theme
-    function setTheme(themeKey) {
-        document.body.className = `theme-${themeKey}`;
-        state.theme = themeKey;
-        DOM.themeButtons.forEach(btn => {
-            btn.classList.toggle('selected', btn.dataset.theme === themeKey);
-        });
-    }
-
-
-    // --- MODULE 5: Core Game Logic ---
-
-    // Picks a random, unique subset of words for the level
-    function pickWords(levelKey) {
-        const source = [...GAME_CONFIG.WORDS[levelKey]];
-        // Simple Fisher-Yates shuffle
-        for (let i = source.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [source[i], source[j]] = [source[j], source[i]];
-        }
-        return source.slice(0, GAME_CONFIG.MAX_WORDS_PER_LEVEL);
-    }
-
-    // Renders the words to the screen, highlighting the current word
+    // -------------------------------------
+    // MODULE 4: RENDERING & UI UPDATES
+    // -------------------------------------
+    
+    // Renders the current words array to the screen
     function renderWords() {
         DOM.wordsEl.innerHTML = '';
-        state.currentWords.forEach((w, i) => {
+        const wordsToRender = gameState.wordsArray.slice(gameState.currentIndex);
+
+        wordsToRender.forEach((w, i) => {
             const span = document.createElement('span');
-            span.className = 'word' + (i === state.currentIndex ? ' current' : '');
+            // Only the first visible word is the current one
+            span.className = 'word' + (i === 0 ? ' current' : '');
             [...w].forEach(ch => {
                 const c = document.createElement('span');
-                c.className = 'char pending'; // Mark all as pending initially
+                c.className = 'char';
                 c.textContent = ch;
                 span.appendChild(c);
             });
             DOM.wordsEl.appendChild(span);
             DOM.wordsEl.append(" ");
         });
-
-        // Scroll the view to keep the current word visible
+        // Auto-scroll logic (scroll to the current word)
         const currentWordEl = DOM.wordsEl.querySelector('.word.current');
         if (currentWordEl) {
-            currentWordEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            currentWordEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    }
+    
+    // Updates WPM, Accuracy, and Timer in real-time
+    function updateStats(onInput = false) {
+        const elapsedSec = Math.floor((Date.now() - gameState.startTime) / 1000);
+        const elapsedMin = elapsedSec / 60;
+        
+        // Calculate WPM (Net WPM: Correct Chars / 5 / Time)
+        const wpm = Math.round((gameState.correctChars / 5) / Math.max(elapsedMin, 0.01));
+        // Calculate Accuracy
+        const acc = Math.round((gameState.correctChars / Math.max(gameState.totalTyped, 1)) * 100);
+
+        DOM.wpmEl.textContent = wpm;
+        DOM.accuracyEl.textContent = acc + "%";
+
+        if (!onInput) {
+             // Only update timer on the interval
+            gameState.timeLeft--;
+            DOM.timerEl.textContent = gameState.timeLeft;
+            
+            // Check for individual word timeout
+            if (gameState.timeLeft <= 0) {
+                handleWordMiss();
+            }
         }
     }
 
-    // Calculates and updates the real-time stats
-    function calculateWPM() {
-        const elapsedMin = (Date.now() - state.startTime) / 1000 / 60;
-        // WPM = (Words Typed * 5 / 5) / Elapsed Minutes
-        return elapsedMin > 0 ? Math.round((state.correctChars / 5) / elapsedMin) : 0;
+    // Applies the selected theme to the body and variables
+    function applyTheme(themeKey) {
+        const theme = CONFIG.THEMES[themeKey];
+        if (!theme) return;
+
+        document.documentElement.style.setProperty('--color-bg', theme.bg.includes('gradient') ? CONFIG.THEMES['air-space'].bg : theme.bg);
+        document.documentElement.style.setProperty('--color-text', theme.text);
+        document.documentElement.style.setProperty('--color-accent', theme.accent);
+        document.body.style.backgroundImage = theme.bg.includes('gradient') ? theme.bg : `url(${theme.bg})`;
+        
+        DOM.themeOptions.forEach(opt => opt.classList.remove('selected'));
+        document.querySelector(`.theme-option[data-theme="${themeKey}"]`).classList.add('selected');
+        
+        // NOTE: For a production app, the background-image should be applied to the body, 
+        // and background-color should be used for the variable fallback.
+    }
+    
+    // -------------------------------------
+    // MODULE 5: GAME FLOW & LOGIC
+    // -------------------------------------
+
+    // Resets game state and UI to start a new level or game
+    function resetLevel(levelKey) {
+        const levelData = CONFIG.LEVELS[levelKey];
+        
+        // Populate words array and set current level
+        gameState.wordsArray = levelData.words.slice(0, CONFIG.WORD_COUNT);
+        gameState.currentLevel = levelKey;
+        gameState.currentIndex = 0;
+        gameState.correctChars = 0;
+        gameState.totalTyped = 0;
+        gameState.isGameOver = false;
+        
+        // Total time for the level: words * timePerWord
+        gameState.levelTimeLimit = gameState.wordsArray.length * levelData.timePerWord;
+        gameState.timeLeft = gameState.levelTimeLimit;
+
+        clearInterval(gameState.timerId);
+        clearInterval(gameState.wordTimerId);
+
+        DOM.inputEl.value = '';
+        DOM.inputEl.disabled = false;
+        DOM.inputEl.focus();
+        DOM.resultEl.innerHTML = '';
+        DOM.currentLevelEl.textContent = levelKey.charAt(0).toUpperCase() + levelKey.slice(1);
+    }
+    
+    // Starts the main game timer (one tick per second)
+    function startTimer() {
+        gameState.startTime = Date.now();
+        // Start the timer to check word time limit (time per word)
+        gameState.timerId = setInterval(() => {
+            updateStats();
+            if (gameState.isGameOver) clearInterval(gameState.timerId);
+        }, 1000);
     }
 
-    function calculateAccuracy() {
-        if (state.totalTypedChars === 0) return 100;
-        return Math.round((state.correctChars / state.totalTypedChars) * 100);
+    // Initiates the game from the setup screen
+    function startGame() {
+        gameState.playerName = DOM.playerInput.value.trim() || "Guest";
+        const selectedLevel = DOM.levelSelect.value;
+
+        DOM.setupScreen.style.display = 'none';
+        DOM.gameScreen.style.display = 'block';
+
+        resetLevel(selectedLevel);
+        renderWords();
+        startTimer();
+    }
+    
+    // Handles the completion of the game or level
+    function finishGame(isLevelComplete = false) {
+        clearInterval(gameState.timerId);
+        gameState.isGameOver = true;
+        DOM.inputEl.disabled = true;
+
+        const elapsedMin = (Date.now() - gameState.startTime) / 1000 / 60;
+        const finalWPM = Math.round((gameState.correctChars / 5) / Math.max(elapsedMin, 0.01));
+        const finalAcc = Math.round((gameState.correctChars / Math.max(gameState.totalTyped, 1)) * 100);
+
+        updateLeaderboard(gameState.playerName, finalWPM);
+
+        if (isLevelComplete) {
+            util.playSound('PASS_LEVEL');
+            showLevelModal(finalWPM, finalAcc);
+        } else {
+            // General Game Over (Failure)
+            util.playSound('FAIL_WORD');
+            DOM.resultEl.innerHTML = `<p class="lose">Game Over, ${gameState.playerName}! You failed to complete all levels. Final WPM: ${finalWPM} | Accuracy: ${finalAcc}%</p>`;
+            DOM.restartBtn.style.display = 'inline-block';
+        }
     }
 
-    function updateStatsDisplay() {
-        DOM.wpmEl.textContent = calculateWPM();
-        DOM.accuracyEl.textContent = calculateAccuracy() + "%";
-        DOM.scoreEl.textContent = state.score;
-        DOM.currentLevelEl.textContent = GAME_CONFIG.LEVELS[state.currentLevelKey].name;
-    }
+    // Shows the modal for level transition
+    function showLevelModal(wpm, acc) {
+        const nextLevel = util.getNextLevel(gameState.currentLevel);
+        const nextLevelName = nextLevel ? nextLevel.charAt(0).toUpperCase() + nextLevel.slice(1) : "None (Expert Level Complete!)";
 
-    // Resets the timer for the current word
-    function resetWordTimer() {
-        clearInterval(state.wordTimerId);
-        const timeLimit = GAME_CONFIG.LEVELS[state.currentLevelKey].timePerWord * state.currentWords.length;
-        state.timeLeft = timeLimit;
-        DOM.timerEl.textContent = Math.round(state.timeLeft);
+        DOM.modalTitle.textContent = nextLevel ? `Level ${gameState.currentLevel.toUpperCase()} Complete!` : "CHALLENGE CONQUERED!";
+        DOM.modalMessage.innerHTML = `Your WPM: ${wpm} | Accuracy: ${acc}%<br>Next Level: ${nextLevelName}`;
+        
+        DOM.continueBtn.style.display = nextLevel ? 'inline-block' : 'none';
 
-        state.wordTimerId = setInterval(() => {
-            state.timeLeft -= 0.1;
-            DOM.timerEl.textContent = Math.round(state.timeLeft);
-
-            if (state.timeLeft <= 0) {
-                // Time runs out for the current level
-                clearInterval(state.wordTimerId);
-                finishGame(false); // Player failed due to timeout
+        // Set listener for modal buttons
+        DOM.continueBtn.onclick = () => {
+            DOM.levelModal.classList.remove('active');
+            if (nextLevel) {
+                resetLevel(nextLevel);
+                renderWords();
+                startTimer();
             }
-        }, 100); // Check every 100ms for smoother timer
+        };
+        
+        DOM.stopBtn.onclick = () => {
+            DOM.levelModal.classList.remove('active');
+            // Transition back to setup or show final results screen
+            DOM.gameScreen.style.display = 'none';
+            DOM.setupScreen.style.display = 'block';
+            DOM.restartBtn.style.display = 'none';
+        };
+
+        DOM.levelModal.classList.add('active');
     }
 
-    // Handles logic when the user types a character
+    // Handles the core typing logic
     function handleInput() {
         const val = DOM.inputEl.value;
-        const curWord = state.currentWords[state.currentIndex] || "";
-        const span = DOM.wordsEl.querySelectorAll('.word')[state.currentIndex];
-        const charSpans = span ? span.querySelectorAll('.char') : [];
+        const curWord = gameState.wordsArray[gameState.currentIndex] || "";
+        const charSpans = DOM.wordsEl.querySelectorAll('.word.current .char');
 
-        // Track total typed characters, including backspaces
-        state.totalTypedChars++;
+        gameState.totalTyped++;
 
-        // Reset correctChars count for current word to re-calculate
-        let currentCorrectChars = 0;
-        let isWordCorrect = true;
+        // Strict Error Handling: If *any* key is wrong, immediately mark word as missed and skip
+        let isMistake = false;
+        for (let i = 0; i < val.length; i++) {
+            if (val[i] !== curWord[i]) {
+                isMistake = true;
+                break;
+            }
+        }
 
+        if (isMistake) {
+            // Requirement: If a player types a wrong letter, immediately skip to the next word.
+            handleWordMiss(true);
+            util.playSound('FAIL_WORD');
+            return;
+        }
+        
+        // Live feedback for correct characters
+        gameState.correctChars = 0; // Recalculate based on current state
         for (let i = 0; i < charSpans.length; i++) {
-            charSpans[i].classList.remove('correct', 'wrong', 'pending');
-
+            charSpans[i].classList.remove('correct', 'wrong');
             if (val[i]) {
                 if (val[i] === curWord[i]) {
                     charSpans[i].classList.add('correct');
-                    currentCorrectChars++;
+                    gameState.correctChars++;
                 } else {
+                    // This case should ideally be caught by the isMistake check above,
+                    // but is kept for robustness in case of browser/timing quirks.
                     charSpans[i].classList.add('wrong');
-                    isWordCorrect = false;
-                    // Requirement: Skip word immediately on wrong letter
-                    playSound('miss');
-                    skipWord();
-                    return;
                 }
-            } else {
-                // If character hasn't been typed yet
-                charSpans[i].classList.add('pending');
-                isWordCorrect = false; // Not fully typed yet
             }
         }
+        
+        // Update WPM and Accuracy on every input event
+        updateStats(true); 
 
-        // Update overall correct characters count (only count fully correct words)
-        state.correctChars = Array.from(DOM.wordsEl.querySelectorAll('.char.correct')).length;
+        // Word Completion
+        if (val === curWord) {
+            gameState.currentIndex++;
+            DOM.inputEl.value = '';
 
-
-        // Word completed (Check if input matches the word and ends with a space or is last word)
-        if (val.length === curWord.length && isWordCorrect) {
-            handleWordCompletion(true, curWord.length);
-        }
-
-        updateStatsDisplay();
-    }
-
-    // Logic for skipping or completing a word
-    function skipWord() {
-        state.wordsMissed++;
-        state.currentIndex++;
-        DOM.inputEl.value = ''; // Clear input
-
-        if (state.currentIndex >= state.currentWords.length) {
-            finishLevel(false); // Player failed this level (skipped a word)
-        } else {
-            renderWords();
-            // Penalty for skipping: reduce time
-            state.timeLeft = Math.max(0, state.timeLeft - GAME_CONFIG.LEVELS[state.currentLevelKey].timePerWord * 0.5);
-            DOM.timerEl.textContent = Math.round(state.timeLeft);
-            DOM.inputEl.focus();
+            // Level Complete check
+            if (gameState.currentIndex >= gameState.wordsArray.length) {
+                finishGame(true); // isLevelComplete = true
+            } else {
+                // Adjust remaining time for next word
+                const timeForNextWord = CONFIG.LEVELS[gameState.currentLevel].timePerWord;
+                gameState.timeLeft += timeForNextWord; 
+                renderWords();
+            }
         }
     }
 
-    // Logic for correctly completing a word
-    function handleWordCompletion(isCorrect, length) {
-        state.wordsTyped++;
-        state.score += length * 10; // Simple scoring based on word length
-        state.currentIndex++;
+    // Handles a missed word due to time running out or a typing error
+    function handleWordMiss(typingError = false) {
+        const curWord = gameState.wordsArray[gameState.currentIndex] || "";
+        const penaltyChars = curWord.length;
+
+        // Apply a penalty to totalTyped for words missed by time
+        if (!typingError) {
+             gameState.totalTyped += penaltyChars;
+        }
+
+        gameState.currentIndex++;
         DOM.inputEl.value = '';
-        playSound('correct');
+        util.playSound('FAIL_WORD');
 
-        if (state.currentIndex >= state.currentWords.length) {
-            finishLevel(true);
+        if (gameState.currentIndex >= gameState.wordsArray.length) {
+            finishGame(false); // isLevelComplete = false (failed the level/game)
         } else {
+            // Reset time for the new word
+            const timeForNextWord = CONFIG.LEVELS[gameState.currentLevel].timePerWord;
+            gameState.timeLeft += timeForNextWord;
             renderWords();
-            DOM.inputEl.focus();
         }
     }
+    
+    // -------------------------------------
+    // MODULE 6: LEADERBOARD
+    // -------------------------------------
+    
+    // Stores and sorts scores
+    function updateLeaderboard(name, wpm) {
+        let leaderboard = JSON.parse(localStorage.getItem("leaderboard") || "[]");
+        
+        // Store the name, WPM, and the level achieved
+        leaderboard.push({ 
+            name, 
+            wpm, 
+            level: gameState.currentLevel.toUpperCase(),
+            timestamp: new Date().toLocaleString()
+        });
+        
+        // Sort high to low
+        leaderboard.sort((a,b) => b.wpm - a.wpm);
+        // keep top 10
+        leaderboard = leaderboard.slice(0, 10);
+        localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+        renderLeaderboard();
+    }
 
-    // --- MODULE 6: Game Flow Control ---
-
-    function startGame(levelKey = state.currentLevelKey) {
-        state.playerName = document.getElementById('playerName').value.trim();
-        if (!state.playerName) {
-            alert("Please enter your name!");
+    // Renders scores to the list
+    function renderLeaderboard() {
+        const leaderboard = JSON.parse(localStorage.getItem("leaderboard") || "[]");
+        DOM.leaderboardList.innerHTML = '';
+        if (leaderboard.length === 0) {
+            DOM.leaderboardList.innerHTML = '<li>No scores yet!</li>';
             return;
         }
-
-        // Setup UI
-        DOM.setup.style.display = 'none';
-        DOM.game.style.display = 'block';
-        DOM.resultEl.innerHTML = '';
-        DOM.inputEl.disabled = false;
-        DOM.inputEl.focus();
-
-        // Reset/Setup State
-        state.currentLevelKey = levelKey;
-        state.currentWords = pickWords(levelKey);
-        state.currentIndex = 0;
-        state.correctChars = 0;
-        state.totalTypedChars = 0;
-        state.wordsTyped = 0;
-        state.wordsMissed = 0;
-        state.startTime = Date.now();
-        state.score = 0;
-
-        renderWords();
-        updateStatsDisplay();
-        resetWordTimer(); // Start timer
+        leaderboard.forEach(p => {
+            const li = document.createElement('li');
+            li.textContent = `${p.name} (${p.level}) - ${p.wpm} WPM`;
+            DOM.leaderboardList.appendChild(li);
+        });
     }
 
-    function finishLevel(passed) {
-        clearInterval(state.wordTimerId);
-        const levelData = GAME_CONFIG.LEVELS[state.currentLevelKey];
-        const nextLevelKey = levelData.next;
-
-        if (passed && nextLevelKey) {
-            // Level passed, prompt for next level
-            playSound('levelUp');
-            DOM.modalTitle.textContent = "Level Complete! 🎉";
-            DOM.completedLevel.textContent = levelData.name;
-            DOM.modalScore.textContent = state.score;
-            DOM.nextLevelName.textContent = GAME_CONFIG.LEVELS[nextLevelKey].name;
-            DOM.modalMessage.style.display = 'block';
-            DOM.modalContinue.style.display = 'inline-block';
-
-            DOM.levelModal.style.display = 'flex';
-        } else {
-            // Game Over (Failed level or Expert level completed)
-            finishGame(passed);
-        }
-
-        // Record history for the completed level
-        const finalResult = {
-            level: levelData.name,
-            wpm: calculateWPM(),
-            accuracy: calculateAccuracy(),
-            score: state.score
-        };
-        updateHistory(finalResult);
-    }
-
-    function finishGame(win) {
-        clearInterval(state.wordTimerId);
-        DOM.inputEl.disabled = true;
-        DOM.levelModal.style.display = 'none';
-
-        const finalWPM = calculateWPM();
-        const finalAcc = calculateAccuracy();
-
-        if (win) {
-            DOM.resultEl.innerHTML = `<p class="win">✅ ${state.playerName}, Game Over! You are a master! Final WPM: ${finalWPM} | Accuracy: ${finalAcc}% | Score: ${state.score}</p>`;
-        } else {
-            DOM.resultEl.innerHTML = `<p class="lose">❌ Game Over, ${state.playerName}. Final WPM: ${finalWPM} | Accuracy: ${finalAcc}% | Score: ${state.score}</p>`;
-        }
-
-        updateLeaderboard(); // Update scores on final game state
-        DOM.setup.style.display = 'grid'; // Return to setup for restart
-        DOM.game.style.display = 'none';
-    }
-
-
-    // --- MODULE 7: Event Listeners and Initialization ---
-
+    // -------------------------------------
+    // MODULE 7: EVENT LISTENERS
+    // -------------------------------------
+    
+    // Initialize listeners
     function initListeners() {
-        // Start button
-        DOM.startBtn.addEventListener('click', () => startGame(state.currentLevelKey));
+        DOM.startBtn.addEventListener('click', startGame);
+        DOM.restartBtn.addEventListener('click', () => {
+             // Go back to setup to select level/name
+            DOM.gameScreen.style.display = 'none';
+            DOM.setupScreen.style.display = 'block';
+            DOM.restartBtn.style.display = 'none';
+        });
 
-        // Input field
+        // Use 'input' for real-time validation and 'keydown' to prevent paste/control keys
         DOM.inputEl.addEventListener('input', handleInput);
-
-        // Level selection buttons
-        DOM.levelButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                state.currentLevelKey = btn.dataset.level;
-                DOM.levelButtons.forEach(b => b.classList.remove('selected'));
-                btn.classList.add('selected');
+        DOM.inputEl.addEventListener('keydown', (e) => {
+             // Prevent space at start of word and control keys
+            if (e.key === ' ' && DOM.inputEl.value.length === 0) {
+                e.preventDefault();
+            }
+        });
+        
+        // Theme selection
+        DOM.themeOptions.forEach(opt => {
+            opt.addEventListener('click', (e) => {
+                const themeKey = e.target.getAttribute('data-theme');
+                applyTheme(themeKey);
             });
         });
 
-        // Theme selection buttons
-        DOM.themeButtons.forEach(btn => {
-            btn.addEventListener('click', () => setTheme(btn.dataset.theme));
-        });
-
-        // Modal (Continue/Stop)
-        DOM.modalContinue.addEventListener('click', () => {
-            const nextLevelKey = GAME_CONFIG.LEVELS[state.currentLevelKey].next;
-            DOM.levelModal.style.display = 'none';
-            startGame(nextLevelKey); // Start game with the next level key
-        });
-
-        DOM.modalStop.addEventListener('click', () => {
-            DOM.levelModal.style.display = 'none';
-            finishGame(true); // Stop after a successful level
-        });
+        // Initialize theme and leaderboard on load
+        applyTheme('air-space');
+        renderLeaderboard();
     }
 
-    // Initial setup on page load
-    (() => {
-        initListeners();
-        setTheme(state.theme); // Apply default theme
-        renderLeaderboard();
-        updateHistory(JSON.parse(sessionStorage.getItem("protypeHistory") || "[]")); // Initial history load
-    })();
+    // Start the application
+    initListeners();
+
+})();
 </script>
 </body>
 </html>
